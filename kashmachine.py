@@ -9,15 +9,19 @@ brands = ["supreme"]
 min_profit = 20.00
 
 # ADJUST HOW NEW ITEMS ARE IN HOURS
-max_age = 24.00
+max_age = 12.00
 
 class GrailedItem: 
-	def __init__(self, brand, name, color, size, price): 
+	def __init__(self, link, brand, name, color, size, price): 
+		self.link = link
 		self.brand = brand
 		self.name = name
 		self.color = color
 		self.size = size
 		self.price = price
+
+	def get_link(self): 
+		return self.link
 
 	def get_brand(self): 
 		return self.brand
@@ -82,11 +86,32 @@ def main():
 		for stale_link in stale_links:
 			links.append(stale_link.get_attribute('href'))
 
+		items = []
 		for link in links: 
 			grailed_driver.get(link)
+			xpath = "//div[@class=\"-listing-designer-title-size\"]"
+			listing_info = grailed_driver.find_element_by_xpath(xpath).text.splitlines()
+			brand = listing_info[0]
+			name = listing_info[1]
+			size = parse_size(listing_info[2])
+			color = ""
+			if "Color" in listing_info[3]: 
+				color = listing_info[3].lstrip('Color: ')
+				if "Multi" in color: 
+					color = ""
+			list_price = grailed_driver.find_element_by_class_name('-price').text.lstrip('$')
+			if ("," in list_price): 
+				list_price = list_price.replace(",", "")
+			shipping_price = grailed_driver.find_element_by_class_name('-shipping-cost').text.lstrip('+$')
+			if ("," in shipping_price): 
+				shipping_price = shipping_price.replace(",", "")
+			price = int(list_price) + int(shipping_price)
+			item = GrailedItem(link, brand, name, color, size, price)
+			items.append(item)
 
+		for item in items: 
+			print(item.get_name)
 
-		
 
 # converts time into hours
 def time_in_hours(age_text):
@@ -115,6 +140,17 @@ def time_in_hours(age_text):
 		# format already in hours
 		return num
 
-
+def parse_size(size_text): 
+	size_text = size_text.lstrip('Size: ')
+	if "ONE SIZE" in size_text: 
+		return ""
+	if "US" in size_text: 
+		size_text = size_text.lstrip('US ')
+	result = ""
+	index = 0
+	while index < len(size_text) and size_text[index] != ' ': 
+		result += size_text[index]
+		index += 1
+	return result
 
 main()
