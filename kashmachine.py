@@ -4,6 +4,9 @@ import os
 
 brands = ["supreme"]
 
+# ADJUST MINIMUM PROFIT THRESHOLD
+min_profit = 20.00
+
 def main(): 
 	driver_path = os.getcwd() + "/chromedriver"
 	grailed_driver = webdriver.Chrome(executable_path=driver_path)
@@ -20,7 +23,7 @@ def main():
 		condition.click()
 		new_box = grailed_driver.find_element_by_name('New/Never Worn')
 		new_box.click()
-		
+
 
 
 
