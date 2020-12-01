@@ -109,10 +109,6 @@ def main():
 			item = GrailedItem(link, brand, name, color, size, price)
 			items.append(item)
 
-		for item in items: 
-			print(item.get_name)
-
-
 # converts time into hours
 def time_in_hours(age_text):
 	index = 0
