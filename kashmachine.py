@@ -9,7 +9,7 @@ brands = ["supreme"]
 min_profit = 20.00
 
 # ADJUST HOW NEW ITEMS ARE IN HOURS
-max_time = 24
+max_age = 24.00
 
 def main(): 
 	driver_path = os.getcwd() + "/chromedriver"
@@ -37,17 +37,55 @@ def main():
 		new_sort = sorts[4]
 		new_sort.click()
 
+		# get all items up until max_time
+		xpath = "//div[@class=\"feed-item\"]//span[@class=\"date-ago\"]"
+		feed_ages = grailed_driver.find_elements_by_xpath(xpath)
+		last_age = time_in_hours(feed_ages[-1].text)
+		last_height = grailed_driver.execute_script("return document.body.scrollHeight")
+		while last_age < max_age: 
+			grailed_driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+			time.sleep(1.5)
+			new_height = grailed_driver.execute_script("return document.body.scrollHeight")
+			feed_ages = grailed_driver.find_elements_by_xpath(xpath)
+			last_age = time_in_hours(feed_ages[-1].text)
+			if new_height == last_height or last_age >= max_age: 
+				break
+			last_height = new_height
+
+		# get the item's description and pricing
+		xpath = "//div[@class=\"feed-item\"]/a[@class=\"listing-item-link\"]"
+		links = grailed_driver.find_elements_by_xpath(xpath)
+		for link in links:
+			grailed_driver.get(link.get_attribute('href')) 
+			time.sleep(3)
 		
 
-		
-		
-
-
-		
-
-
-		
-
+# converts time into hours
+def time_in_hours(age_text):
+	index = 0
+	c = age_text[index]
+	while ord(c) < 49 or ord(c) > 57: 
+		index += 1
+		c = age_text[index]
+	num = float(c)
+	index += 2
+	# it can either be years, months, days, hours, or minutes
+	if age_text[index] == 'y':
+		# convert years to hours
+		return num * 8760.0
+	elif age_text[index] == 'm': 
+		if age_text[index + 1] == 'i':
+			# convert minutes to hours 
+			return num / 60.0
+		else: 
+			# convert months to hours
+			return num * 730.001
+	elif age_text[index] == 'd':
+		# convert days to hours
+		return num * 24.0
+	else: 
+		# format already in hours
+		return num
 
 
 
