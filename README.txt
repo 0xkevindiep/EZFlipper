@@ -1,0 +1,1 @@
+Go to system preferences and allow chromedriver
