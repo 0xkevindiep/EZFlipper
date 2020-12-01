@@ -64,7 +64,7 @@ def main():
 		new_sort = sorts[4]
 		new_sort.click()
 
-		# get all items up until max_time
+		# get all items up until max_age
 		xpath = "//div[@class=\"feed-item\"]//span[@class=\"date-ago\"]"
 		feed_ages = grailed_driver.find_elements_by_xpath(xpath)
 		last_age = time_in_hours(feed_ages[-1].text)
