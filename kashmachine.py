@@ -85,7 +85,6 @@ def main():
 		links = []
 		for stale_link in stale_links:
 			links.append(stale_link.get_attribute('href'))
-
 		items = []
 		for link in links: 
 			grailed_driver.get(link)
