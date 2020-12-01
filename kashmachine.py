@@ -11,6 +11,29 @@ min_profit = 20.00
 # ADJUST HOW NEW ITEMS ARE IN HOURS
 max_age = 24.00
 
+class GrailedItem: 
+	def __init__(self, brand, name, color, size, price): 
+		self.brand = brand
+		self.name = name
+		self.color = color
+		self.size = size
+		self.price = price
+
+	def get_brand(self): 
+		return self.brand
+
+	def get_name(self): 
+		return self.name
+
+	def get_color(self): 
+		return self.color
+
+	def get_size(self): 
+		return self.size
+
+	def get_price(self): 
+		return self.price
+
 def main(): 
 	driver_path = os.getcwd() + "/chromedriver"
 	grailed_driver = webdriver.Chrome(executable_path=driver_path)
@@ -52,12 +75,17 @@ def main():
 				break
 			last_height = new_height
 
-		# get the item's description and pricing
+		# get the item's brand, name, color, size, and price with shipping
 		xpath = "//div[@class=\"feed-item\"]/a[@class=\"listing-item-link\"]"
-		links = grailed_driver.find_elements_by_xpath(xpath)
-		for link in links:
-			grailed_driver.get(link.get_attribute('href')) 
-			time.sleep(3)
+		stale_links = grailed_driver.find_elements_by_xpath(xpath)
+		links = []
+		for stale_link in stale_links:
+			links.append(stale_link.get_attribute('href'))
+
+		for link in links: 
+			grailed_driver.get(link)
+
+
 		
 
 # converts time into hours
