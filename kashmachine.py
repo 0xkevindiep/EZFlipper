@@ -8,7 +8,7 @@ brands = ["supreme"]
 # ADJUST MINIMUM PROFIT THRESHOLD
 min_profit = 20.00
 
-# ADJUST HOW NEW ITEMS ARE IN HOURS
+# ADJUST MAX AGE OF ITEMS IN HOURS
 max_age = 12.00
 
 class GrailedItem: 
