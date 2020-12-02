@@ -8,8 +8,8 @@ brands = ["supreme"]
 # ADJUST MINIMUM PROFIT THRESHOLD
 min_profit = 20.00
 
-# ADJUST MAX AGE OF ITEMS IN HOURS
-max_age = 12.00
+# ADJUST MAX AGE OF ITEMS IN DAYS
+max_age = 30.00
 
 class GrailedItem: 
 	def __init__(self, link, brand, name, color, size, price): 
@@ -67,14 +67,14 @@ def main():
 		# get all items up until max_age
 		xpath = "//div[@class=\"feed-item\"]//span[@class=\"date-ago\"]"
 		feed_ages = grailed_driver.find_elements_by_xpath(xpath)
-		last_age = time_in_hours(feed_ages[-1].text)
+		last_age = time_in_days(feed_ages[-1].text)
 		last_height = grailed_driver.execute_script("return document.body.scrollHeight")
 		while last_age < max_age: 
 			grailed_driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 			time.sleep(1.5)
 			new_height = grailed_driver.execute_script("return document.body.scrollHeight")
 			feed_ages = grailed_driver.find_elements_by_xpath(xpath)
-			last_age = time_in_hours(feed_ages[-1].text)
+			last_age = time_in_days(feed_ages[-1].text)
 			if new_height == last_height or last_age >= max_age: 
 				break
 			last_height = new_height
@@ -109,7 +109,7 @@ def main():
 			items.append(item)
 
 # converts time into hours
-def time_in_hours(age_text):
+def time_in_days(age_text):
 	index = 0
 	c = age_text[index]
 	while ord(c) < 49 or ord(c) > 57: 
@@ -119,20 +119,20 @@ def time_in_hours(age_text):
 	index += 2
 	# it can either be years, months, days, hours, or minutes
 	if age_text[index] == 'y':
-		# convert years to hours
-		return num * 8760.0
+		# convert years to days
+		return num * 365.0
 	elif age_text[index] == 'm': 
 		if age_text[index + 1] == 'i':
-			# convert minutes to hours 
-			return num / 60.0
+			# convert minutes to days 
+			return num / 1440.0
 		else: 
-			# convert months to hours
-			return num * 730.001
-	elif age_text[index] == 'd':
-		# convert days to hours
-		return num * 24.0
+			# convert months to days
+			return num * 30.0
+	elif age_text[index] == 'h':
+		# convert hours to days
+		return num / 24.0
 	else: 
-		# format already in hours
+		# format already in days
 		return num
 
 def parse_size(size_text): 
