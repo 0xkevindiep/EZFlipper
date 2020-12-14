@@ -21,9 +21,3 @@ allow chromedriver to run as a trusted executable.
 2. Type the following command into your terminal:  
 	
 		git clone https://github.com/kd24972/KashMachine.git
-
-- Add your remote.
-	
-		git remote add origin {{the link you just copied}}
-
-- Breaking that down
