@@ -10,14 +10,25 @@ which items are worth reselling. With millions of listings on Grailed, there's
 an abundance of hidden profitable items ready to be found and flipped. 
 
 ## Requirements
-You must have the latest verion of Google Chrome (Version 87.0.4280.67)
+You must have the latest verion of Google Chrome (Version 87.0.4280.67), and 
+Python 3.8.5 (or higher). 
+
 
 ### macOS
 When running for the first time, you may need to go to system preferences to 
 allow chromedriver to run as a trusted executable.
 
 ## Instrutions
+0. Install all of the requirements listed above. 
 1. Open your terminal and go to the directory you'd like to clone Kash Machine.
-2. Type the following command into your terminal:  
+2. Clone the repository by typing the following command into your terminal:  
 	
 		git clone https://github.com/kd24972/KashMachine.git
+
+3. Once you've successfully cloned the repository, go into it: 
+	
+		cd KashMachine	
+
+4. Install the requirements to run Kash Machine by typing in your terminal: 
+	
+		pip install -r requirements.txt
