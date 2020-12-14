@@ -15,3 +15,8 @@ You must have the latest verion of Google Chrome (Version 87.0.4280.67)
 ### macOS
 When running for the first time, you may need to go to system preferences to 
 allow chromedriver to run as a trusted executable.
+
+## Instrutions
+1. Open your terminal and go to the directory you'd like to clone Kash Machine.
+2. Type the following command into your terminal: 
+	git clone https://github.com/kd24972/KashMachine.git

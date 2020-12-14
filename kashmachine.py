@@ -11,7 +11,7 @@ brands = ["vlone"]
 min_profit = 20.00
 
 # ADJUST MAX AGE OF ITEMS IN DAYS
-max_age = 1.00
+max_age = 0.50
 
 
 class GrailedItem: 
