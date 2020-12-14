@@ -5,6 +5,8 @@ from selenium.webdriver.common.action_chains import ActionChains
 import os
 import time
 
+# ADD/REMOVE DESIRED BRANDS
+# BRANDS MUST BE ON GRAILED
 brands = ["vlone"]
 
 # ADJUST MINIMUM PROFIT THRESHOLD

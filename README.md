@@ -10,7 +10,7 @@ which items are worth reselling. With millions of listings on Grailed, there's
 an abundance of hidden profitable items ready to be found and flipped. 
 
 ## Requirements
-You must have the latest verion of Google Chrome (Version 87.0.4280.67), and 
+You must have the latest verion of Google Chrome (Version 87.0.4280.67) and 
 Python 3.8.5 (or higher). 
 
 
@@ -32,3 +32,10 @@ allow chromedriver to run as a trusted executable.
 4. Install the requirements to run Kash Machine by typing in your terminal: 
 	
 		pip install -r requirements.txt
+
+5. Open up kashmachine.py and adjust the variables 'brands', 'min_profit', and 
+'max_age' to your preference and save it. 
+
+6. Return to your terminal and run Kash Machine: 
+	
+		python kashmachine.py
