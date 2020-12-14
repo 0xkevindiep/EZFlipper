@@ -9,9 +9,9 @@ minimum profit threshold by adjusting the variable 'min_profit' to determine
 which items are worth reselling. With millions of listings on Grailed, there's 
 an abundance of hidden profitable items ready to be found and flipped. 
 
-## REQUIREMENTS
+## Requirements
 You must have the latest verion of Google Chrome (Version 87.0.4280.67)
 
-### MAC OS
+### macOS
 When running for the first time, you may need to go to system preferences to 
 allow chromedriver to run as a trusted executable.
