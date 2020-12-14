@@ -18,7 +18,7 @@ Python 3.8.5 (or higher).
 When running for the first time, you may need to go to system preferences to 
 allow chromedriver to run as a trusted executable.
 
-## Instrutions
+## Instructions
 0. Install all of the requirements listed above. 
 1. Open your terminal and go to the directory you'd like to clone Kash Machine.
 2. Clone the repository by typing the following command into your terminal:  
