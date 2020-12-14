@@ -15,6 +15,8 @@ min_profit = 20.00
 # ADJUST MAX AGE OF ITEMS IN DAYS
 max_age = 0.50
 
+# List of items to be compared on StockX
+items = []
 
 class GrailedItem: 
 	def __init__(self, link, brand, name, color, size, price): 
@@ -46,11 +48,10 @@ class GrailedItem:
 def main(): 
 	driver_path = os.getcwd() + "/chromedriver"
 	driver = webdriver.Chrome(executable_path=driver_path)
-
 	grailed_url = "https://www.grailed.com/designers/"
 	stockx_url = "https://stockx.com/"
-
 	
+	# Go through list of brands and scrape data
 	for i in range(len(brands)): 
 		grailed_url = grailed_url + brands[i]
 		driver.get(grailed_url)
@@ -99,7 +100,6 @@ def main():
 		links = []
 		for stale_link in stale_links:
 			links.append(stale_link.get_attribute('href'))
-		items = []
 		for link in links: 
 			driver.get(link)
 			xpath = "//div[@class=\"-listing-designer-title-size\"]"
@@ -121,6 +121,9 @@ def main():
 			price = int(list_price) + int(shipping_price)
 			item = GrailedItem(link, brand, name, color, size, price)
 			items.append(item)
+
+
+
 	
 # check if element exists using xpath
 def check_element_exists(driver, xpath): 
