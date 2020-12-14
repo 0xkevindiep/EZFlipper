@@ -19,4 +19,5 @@ allow chromedriver to run as a trusted executable.
 ## Instrutions
 1. Open your terminal and go to the directory you'd like to clone Kash Machine.
 2. Type the following command into your terminal:  
-	'git clone https://github.com/kd24972/KashMachine.git'
+  
+git clone https://github.com/kd24972/KashMachine.git
