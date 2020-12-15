@@ -147,20 +147,16 @@ def main():
 	for item in grailed_items: 
 		search_bar.send_keys(item.get_name())
 		search_bar.send_keys(Keys.ENTER)
-		# wait for dynamic items to load
-		exists = False
-		while not exists: 
-			exists = check_element_exists_class_name(driver, "tile.browse-tile.updated")
-		stockx_results = driver.find_elements_by_class_name('tile.browse-tile.updated')
+
+		time.sleep(1)
+		stockx_results = driver.find_elements_by_class_name("tile.browse-tile.updated")
 		# refine the search by adding brand and color
 		if len(stockx_results) > 1: 
 				brand_and_color = " " + item.get_brand() + " " + item.get_color()
 				search_bar = driver.find_element_by_id('site-search')
 				search_bar.send_keys(brand_and_color)
 				search_bar.send_keys(Keys.ENTER)
-				exists = False
-				while not exists: 
-					exists = check_element_exists_class_name(driver, "tile.browse-tile.updated")
+				time.sleep(1)
 				stockx_results = driver.find_elements_by_class_name('tile.browse-tile.updated')
 		
 		if len(stockx_results) > 0: 
@@ -208,10 +204,10 @@ def main():
 			exists = False
 			while not exists: 
 				exists = check_element_exists_class_name(driver, "gauge-value")
-			avg_price = driver.find_elements_by_class_name('gauge-value')[2].text.lstrip('$')
+			avg_price = driver.find_elements_by_class_name('gauge-value')[-1].text.lstrip('$')
 			if ("," in avg_price): 
 				avg_price = avg_price.replace(",", "")
-			# calculates the estimated profit
+			# calculates the estimated total profit
 			avg_price = int(avg_price)
 			selling_price = avg_price - ((avg_price * transaction_fee) + (avg_price * processing_fee))
 			buying_price = item.get_price()
