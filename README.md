@@ -1,5 +1,4 @@
 # Kash Machine 
-By: Kevin Diep
 
 ## Description
 Kash Machine is a program that scrapes a third party marketplace, 
