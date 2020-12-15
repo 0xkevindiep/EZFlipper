@@ -14,7 +14,6 @@ hidden profitable items ready to be found and flipped.
 You must have the latest verion of Google Chrome (Version 87.0.4280.67) and 
 Python 3.8.5 (or higher). 
 
-
 ### macOS
 When running for the first time, you may need to go to system preferences to 
 allow chromedriver to run as a trusted executable.
