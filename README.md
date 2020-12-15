@@ -37,7 +37,7 @@ allow chromedriver to run as a trusted executable.
 5. Open up kashmachine.py and adjust the variables 'brands', 'min_profit', 
 'max_age', and 'transaction_fee' to your preference and save it. 
 
-6. Return to your terminal and run Kash Machine: 
+6. Return to your terminal and run the script: 
 	
 		python kashmachine.py > items.txt
 
