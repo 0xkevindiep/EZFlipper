@@ -1,7 +1,14 @@
 import selenium
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.action_chains import ActionChains  
+from selenium.common.exceptions import ElementClickInterceptedException
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys
+
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+
 import os
 import time
 
@@ -15,8 +22,11 @@ min_profit = 20.00
 # ADJUST MAX AGE OF ITEMS IN DAYS
 max_age = 0.50
 
-# List of items to be compared on StockX
-items = []
+# ADJUST TO YOUR STOCKX TRANSACTION FEES
+transaction_fee = 0.095
+
+# PAYMENT PROCESSING FEE (USUALLY 3%)
+processing_fee = 0.03
 
 class GrailedItem: 
 	def __init__(self, link, brand, name, color, size, price): 
@@ -26,6 +36,7 @@ class GrailedItem:
 		self.color = color
 		self.size = size
 		self.price = price
+		self.profit = -1
 
 	def get_link(self): 
 		return self.link
@@ -45,13 +56,19 @@ class GrailedItem:
 	def get_price(self): 
 		return self.price
 
+	def get_profit(self): 
+		return self.profit
+
+	def adjust_profit(self, profit): 
+		self.profit = profit
+		return self.profit
+
 def main(): 
 	driver_path = os.getcwd() + "/chromedriver"
 	driver = webdriver.Chrome(executable_path=driver_path)
 	grailed_url = "https://www.grailed.com/designers/"
-	stockx_url = "https://stockx.com/"
-	
-	# Go through list of brands and scrape data
+	grailed_items = []
+	# Go through list of brands and scrapes the data
 	for i in range(len(brands)): 
 		grailed_url = grailed_url + brands[i]
 		driver.get(grailed_url)
@@ -62,7 +79,7 @@ def main():
 		condition.click()
 		# checks if Grailed is requesting authentication after clicking an element
 		authetication_xpath = "//div[@class=\"UsersAuthentication\"]"
-		requesting_authentication = check_element_exists(driver, authetication_xpath)
+		requesting_authentication = check_element_exists_xpath(driver, authetication_xpath)
 		if (requesting_authentication): 
 			# clicks off the screen and tries to filter the items again
 			log_in_button = driver.find_element_by_link_text('Log in')
@@ -84,13 +101,13 @@ def main():
 		feed_ages = driver.find_elements_by_xpath(xpath)
 		last_age = time_in_days(feed_ages[-1].text)
 		last_height = driver.execute_script("return document.body.scrollHeight")
-		while last_age < max_age: 
+		while last_age < float(max_age): 
 			driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 			time.sleep(1.5)
 			new_height = driver.execute_script("return document.body.scrollHeight")
 			feed_ages = driver.find_elements_by_xpath(xpath)
 			last_age = time_in_days(feed_ages[-1].text)
-			if new_height == last_height or last_age >= max_age: 
+			if new_height == last_height or last_age >= float(max_age): 
 				break
 			last_height = new_height
 
@@ -122,13 +139,125 @@ def main():
 			item = GrailedItem(link, brand, name, color, size, price)
 			items.append(item)
 
+	# Go on StockX to compare prices and find profitable items
+	profitable_items = []
+	stockx_url = "https://stockx.com/"
+	driver.get(stockx_url)
+	search_bar = driver.find_element_by_id('home-search')
+	for item in grailed_items: 
+		search_bar.send_keys(item.get_name())
+		search_bar.send_keys(Keys.ENTER)
+		# wait for dynamic items to load
+		exists = False
+		while not exists: 
+			exists = check_element_exists_class_name(driver, "tile.browse-tile.updated")
+		stockx_results = driver.find_elements_by_class_name('tile.browse-tile.updated')
+		# refine the search by adding brand and color
+		if len(stockx_results) > 1: 
+				brand_and_color = " " + item.get_brand() + " " + item.get_color()
+				search_bar = driver.find_element_by_id('site-search')
+				search_bar.send_keys(brand_and_color)
+				search_bar.send_keys(Keys.ENTER)
+				exists = False
+				while not exists: 
+					exists = check_element_exists_class_name(driver, "tile.browse-tile.updated")
+				stockx_results = driver.find_elements_by_class_name('tile.browse-tile.updated')
+		
+		if len(stockx_results) > 0: 
+			# click the most relevent item
+			stockx_results[0].click()
 
+			# select the size
+			if item.get_size() != "": 
+				exists = False
+				while not exists: 
+					exists = check_element_exists_class_name(driver, "select-control")
+				size_button = driver.find_elements_by_class_name("select-control")[1]
+				size_button.click()
+				exists = False
+				while not exists: 
+					exists = check_element_exists_class_name(driver, "select-control")
+				size_buttons = driver.find_elements_by_class_name("chakra-menu__menuitem")
+				index = int(len(size_buttons) / 2)
+				searching_size = True
+				while searching_size: 
+					if item.get_size() in size_buttons[index].text: 
+						loading = True
+						while loading: 
+							try: 
+								size_buttons[index].click()
+								searching_size = False
+								loading = False
+							except ElementClickInterceptedException: 
+								loading = True
+					index += 1
+					if index == len(size_buttons): 
+						searching_size = False
+			last_height = driver.execute_script("return document.body.scrollHeight")
 
+			# scroll down to load average price data
+			while True: 
+				driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+				time.sleep(1)
+				new_height = driver.execute_script("return document.body.scrollHeight")
+				if new_height == last_height: 
+					break
+				last_height = new_height
+
+			# waits for average price data to load
+			exists = False
+			while not exists: 
+				exists = check_element_exists_class_name(driver, "gauge-value")
+			avg_price = driver.find_elements_by_class_name('gauge-value')[2].text.lstrip('$')
+			if ("," in avg_price): 
+				avg_price = avg_price.replace(",", "")
+			# calculates the estimated profit
+			avg_price = int(avg_price)
+			selling_price = avg_price - ((avg_price * transaction_fee) + (avg_price * processing_fee))
+			buying_price = item.get_price()
+			profit = selling_price - buying_price
+			item.adjust_profit(profit)
+			if (profit > min_profit): 
+				profitable_items.append(item)
+		search_bar = driver.find_element_by_id('site-search')
+		search_bar.clear()
+
+	# sort the profitable items in descending order
+	profitable_items.sort(reverse=True, key=sort_by_profit)
+
+	index = 1
+	print("PROFITABLE ITEMS\n")
+	for item in profitable_items: 
+		profit_description = str(index) + ". PROFIT: ~$" + str(item.get_profit())
+		item_description = item.get_brand() + " " + item.get_name() + "\n" + item.get_link()
+		print(profit_description)
+		print(item_description + "\n")
+		index += 1
+
+# sorting function
+def sort_by_profit(item): 
+	return item.get_profit()
 	
+# checks if the string is a number
+def is_number(s): 
+	try: 
+		float(s)
+	except ValueError: 
+		return False
+	return True
+
 # check if element exists using xpath
-def check_element_exists(driver, xpath): 
+def check_element_exists_xpath(driver, xpath): 
 	try: 
 		driver.find_element_by_xpath(xpath)
+	except NoSuchElementException:
+		return False
+	return True
+
+# check if element exists using class name
+def check_element_exists_class_name(driver, class_name): 
+	try: 
+		driver.find_element_by_class_name(class_name)
 	except NoSuchElementException:
 		return False
 	return True
