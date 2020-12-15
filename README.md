@@ -1,4 +1,5 @@
 # Kash Machine 
+By: Kevin Diep
 
 ## Description
 Kash Machine is a program that scrapes a third party marketplace, 
@@ -42,4 +43,4 @@ allow chromedriver to run as a trusted executable.
 		python kashmachine.py > items.txt
 
 7. Open items.txt to find all of the profitable items with their corresponding 
-links ordered by descending profit
+links ordered by descending profit.
