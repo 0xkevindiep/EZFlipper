@@ -1,10 +1,11 @@
 {
   "name": "kashmachine",
   "version": "1.0.0",
+  "type": "module",
   "description": "## Description Kash Machine is a program that scrapes a third party marketplace,  [Grailed](https://www.grailed.com/), to find brand new items and compares the  buying price to the average sale price of that same item on another reselling  marketplace, [StockX](https://stockx.com/), to calculate the possible profit  margins from flipping that item. The user gets to choose the minimum profit  threshold by adjusting the variable 'min_profit' to determine which items are  worth reselling. With millions of listings on Grailed, there's an abundance of  hidden profitable items ready to be found and flipped.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,11 @@
   "bugs": {
     "url": "https://github.com/kd24972/kashmachine/issues"
   },
-  "homepage": "https://github.com/kd24972/kashmachine#readme"
+  "homepage": "https://github.com/kd24972/kashmachine#readme",
+  "dependencies": {
+    "chai": "^4.2.0",
+    "express": "^4.17.1",
+    "mocha": "^8.2.1",
+    "request": "^2.88.2"
+  }
 }

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import "../css/index.css";
+// import "../css/index.css";
 import NavBar from "../components/navBar.js";
 
 class Home extends Component {
@@ -11,10 +11,10 @@ class Home extends Component {
     }
     render() {
         return(
-            <div>
+            <React.Fragment>
                 <NavBar />
-            </div>
-        )
+            </React.Fragment>
+        );
     }
 }
 
