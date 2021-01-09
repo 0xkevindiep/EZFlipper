@@ -22,7 +22,7 @@ describe("Home", () => {
         act(() => {
             ReactDOM.render(<Home />, rootContainer);
             var divCount = rootContainer.getElementsByTagName("div").length;
-            assert.strictEqual(divCount, 2);
+            assert.strictEqual(divCount, 3);
         });
     });
   });
