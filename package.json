@@ -32,6 +32,7 @@
     "babel-preset-stage-0": "^6.24.1",
     "babel-register": "^6.26.0",
     "ignore-styles": "^5.0.1",
+    "mocha-jsdom": "^2.0.0",
     "react": "^17.0.1",
     "react-bootstrap": "^1.4.3",
     "react-dom": "^17.0.1"
