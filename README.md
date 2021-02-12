@@ -1,7 +1,7 @@
-# Kash Machine 
+# Cash Machine 
 
 ## Description
-Kash Machine is a program that scrapes a third party marketplace, 
+Cash Machine is a program that scrapes a third party marketplace, 
 [Grailed](https://www.grailed.com/), to find brand new items and compares the 
 buying price to the average sale price of that same item on another reselling 
 marketplace, [StockX](https://stockx.com/), to calculate the possible profit 
@@ -20,25 +20,25 @@ allow chromedriver to run as a trusted executable.
 
 ## Instructions
 0. Install all of the requirements listed above. 
-1. Open your terminal and go to the directory you'd like to clone Kash Machine.
+1. Open your terminal and go to the directory you'd like to clone Cash Machine.
 2. Clone the repository by typing the following command into your terminal:  
 	
-		git clone https://github.com/kd24972/KashMachine.git
+		git clone https://github.com/kd24972/CashMachine.git
 
 3. Once you've successfully cloned the repository, go into it: 
 	
 		cd KashMachine	
 
-4. Install the requirements to run Kash Machine by typing in your terminal: 
+4. Install the requirements to run Cash Machine by typing in your terminal: 
 	
 		pip install -r requirements.txt
 
-5. Open up kashmachine.py and adjust the variables 'brands', 'min_profit', 
+5. Open up cashmachine.py and adjust the variables 'brands', 'min_profit', 
 'max_age', and 'transaction_fee' to your preference and save it. 
 
 6. Return to your terminal and run the script: 
 	
-		python kashmachine.py > items.txt
+		python cashmachine.py > items.txt
 
 7. Open items.txt to find all of the profitable items with their corresponding 
 links ordered by descending profit.
