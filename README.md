@@ -42,7 +42,3 @@ allow chromedriver to run as a trusted executable.
 
 7. Open items.txt to find all of the profitable items with their corresponding 
 links ordered by descending profit.
-
-## Progress
-Currently converting this project into a web application that'll make it more 
-accessible to others. 
