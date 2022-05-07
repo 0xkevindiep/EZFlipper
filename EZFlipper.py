@@ -13,7 +13,7 @@ import time
 
 # ADD/REMOVE DESIRED BRANDS
 # BRANDS MUST BE ON GRAILED
-brands = ["vlone"]
+brands = ["supreme"]
 
 # ADJUST MINIMUM PROFIT THRESHOLD
 min_profit = 20.00
