@@ -1,7 +1,7 @@
-# Cash Machine 
+# EZ Flipper 
 
 ## Description
-Cash Machine is a program that scrapes a third party marketplace, 
+EZ Flipper is a program that scrapes a third party marketplace, 
 [Grailed](https://www.grailed.com/), to find brand new items and compares the 
 buying price to the average sale price of that same item on another reselling 
 marketplace, [StockX](https://stockx.com/), to calculate the possible profit 
