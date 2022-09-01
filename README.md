@@ -11,7 +11,7 @@ worth reselling. With millions of listings on Grailed, there's an abundance of
 hidden profitable items ready to be found and flipped. 
 
 ## Requirements
-You must have the latest verion of Google Chrome (Version 87.0.4280.67) and 
+You must have the latest verion of Google Chrome and 
 Python 3.8.5 (or higher). 
 
 ### macOS
