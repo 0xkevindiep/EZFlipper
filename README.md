@@ -27,7 +27,7 @@ allow chromedriver to run as a trusted executable.
 
 3. Once you've successfully cloned the repository, go into it: 
 	
-		cd KashMachine	
+		cd EZFlipper
 
 4. Install the requirements to run EZ Flipper by typing in your terminal: 
 	
