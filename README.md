@@ -33,7 +33,7 @@ allow chromedriver to run as a trusted executable.
 	
 		pip install -r requirements.txt
 
-5. Open up cashmachine.py and adjust the variables 'brands', 'min_profit', 
+5. Open up EZFlipper.py and adjust the variables 'brands', 'min_profit', 
 'max_age', and 'transaction_fee' to your preference and save it. 
 
 6. Return to your terminal and run the script: 
