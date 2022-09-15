@@ -4,9 +4,9 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import ElementClickInterceptedException
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 
 import os
 import time
@@ -16,10 +16,10 @@ import time
 brands = ["supreme"]
 
 # ADJUST MINIMUM PROFIT THRESHOLD
-min_profit = 20.00
+min_profit = 1.00
 
 # ADJUST MAX AGE OF ITEMS IN DAYS
-max_age = 0.50
+max_age = 0.025
 
 # ADJUST TO YOUR STOCKX TRANSACTION FEES
 transaction_fee = 0.095
@@ -63,48 +63,49 @@ class GrailedItem:
 		return self.profit
 
 def main(): 
-	driver_path = os.getcwd() + "/chromedriver"
-	driver = webdriver.Chrome(executable_path=driver_path)
+	s=Service(ChromeDriverManager().install())
+	driver = webdriver.Chrome(service=s)
+	driver.maximize_window()
 	grailed_url = "https://www.grailed.com/designers/"
 	grailed_items = []
 	# Go through list of brands and scrapes the data
 	for i in range(len(brands)): 
 		grailed_url = grailed_url + brands[i]
 		driver.get(grailed_url)
-
 		# filter items to be brand new
-		filters = driver.find_elements_by_class_name('instant-search-collapsible._collapsed')
-		condition = filters[2]
-		condition.click()
+		driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+		time.sleep(1)
+		conditions = driver.find_element(By.XPATH, '/html/body/div[1]/div/main/div[2]/div[6]/div/div[2]/div[1]/div/div[7]/div[1]/div')
+		conditions.click()
 		# checks if Grailed is requesting authentication after clicking an element
 		authetication_xpath = "//div[@class=\"UsersAuthentication\"]"
 		requesting_authentication = check_element_exists_xpath(driver, authetication_xpath)
 		if (requesting_authentication): 
 			# clicks off the screen and tries to filter the items again
-			log_in_button = driver.find_element_by_link_text('Log in')
+			log_in_button = driver.find_element(By.LINK_TEXT, 'Log in')
 			ActionChains(driver).move_to_element_with_offset(log_in_button, 500, 0).click().perform()
-			condition.click()
-		new_box = driver.find_element_by_name('New/Never Worn')
+			conditions.click()
+		new_box = driver.find_element(By.NAME, 'New/Never Worn')
 		new_box.click()
 
 		# sort items by new
-		sort_select = driver.find_element_by_class_name('ais-SortBy-select')
+		sort_select = driver.find_element(By.CLASS_NAME, 'ais-SortBy-select')
 		sort_select.click()
-		sorts = driver.find_elements_by_class_name('ais-SortBy-option')
+		sorts = driver.find_elements(By.CLASS_NAME, 'ais-SortBy-option')
 		new_sort = sorts[4]
 		new_sort.click()
 		time.sleep(1.5)
 
 		# get all items up until max_age
-		xpath = "//div[@class=\"feed-item\"]//span[@class=\"date-ago\"]"
-		feed_ages = driver.find_elements_by_xpath(xpath)
+		xpath = "//div[@class=\"feed-item\"]//span[@class=\"ListingAge_dateAgo__1rwLv\"]"
+		feed_ages = driver.find_elements(By.XPATH, xpath)
 		last_age = time_in_days(feed_ages[-1].text)
 		last_height = driver.execute_script("return document.body.scrollHeight")
 		while last_age < float(max_age): 
 			driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 			time.sleep(1.5)
 			new_height = driver.execute_script("return document.body.scrollHeight")
-			feed_ages = driver.find_elements_by_xpath(xpath)
+			feed_ages = driver.find_elements(By.XPATH, xpath)
 			last_age = time_in_days(feed_ages[-1].text)
 			if new_height == last_height or last_age >= float(max_age): 
 				break
@@ -112,14 +113,17 @@ def main():
 
 		# get the item's brand, name, color, size, and price with shipping
 		xpath = "//div[@class=\"feed-item\"]/a[@class=\"listing-item-link\"]"
-		stale_links = driver.find_elements_by_xpath(xpath)
+		stale_links = driver.find_elements(By.XPATH, xpath)
 		links = []
 		for stale_link in stale_links:
 			links.append(stale_link.get_attribute('href'))
 		for link in links: 
 			driver.get(link)
-			xpath = "//div[@class=\"-listing-designer-title-size\"]"
-			listing_info = driver.find_element_by_xpath(xpath).text.splitlines()
+			xpath = '//*[@id="__next"]/div/main/div/div[1]/div[2]/div[1]/div[2]'
+			try:
+				listing_info = driver.find_element(By.XPATH, xpath).text.splitlines()
+			except:
+				continue
 			brand = listing_info[0]
 			name = listing_info[1]
 			size = parse_size(listing_info[2])
@@ -128,35 +132,42 @@ def main():
 				color = listing_info[3].lstrip('Color: ')
 				if "Multi" in color: 
 					color = ""
-			list_price = driver.find_element_by_class_name('-price').text.lstrip('$')
+			list_price = driver.find_element(By.CLASS_NAME, 'Money_root__2p4sA').text.lstrip('$')
 			if ("," in list_price): 
 				list_price = list_price.replace(",", "")
-			shipping_price = driver.find_element_by_class_name('-shipping-cost').text.lstrip('+$')
+			xpath = '//*[@id="__next"]/div/main/div/div[1]/div[2]/div[1]/div[4]/span/strong'
+			try: 
+				shipping_price = driver.find_element(By.XPATH, xpath).text.lstrip('+$')
+			except NoSuchElementException:
+				shipping_price = '0'
 			if ("," in shipping_price): 
 				shipping_price = shipping_price.replace(",", "")
 			price = int(list_price) + int(shipping_price)
 			item = GrailedItem(link, brand, name, color, size, price)
-			items.append(item)
+			grailed_items.append(item)
 
 	# Go on StockX to compare prices and find profitable items
 	profitable_items = []
 	stockx_url = "https://stockx.com/"
 	driver.get(stockx_url)
-	search_bar = driver.find_element_by_id('home-search')
+	xpath = '//*[@id="site-search"]'
+	search_bar = driver.find_element(By.XPATH, xpath)
 	for item in grailed_items: 
-		search_bar.send_keys(item.get_name())
-		search_bar.send_keys(Keys.ENTER)
-
+		try: 
+			search_bar.send_keys(item.get_name())
+			search_bar.send_keys(Keys.ENTER)
+		except:
+			continue
 		time.sleep(1)
-		stockx_results = driver.find_elements_by_class_name("tile.browse-tile.updated")
+		stockx_results = driver.find_elements(By.CLASS_NAME, "tile.browse-tile.updated")
 		# refine the search by adding brand and color
 		if len(stockx_results) > 1: 
 				brand_and_color = " " + item.get_brand() + " " + item.get_color()
-				search_bar = driver.find_element_by_id('site-search')
+				search_bar = driver.find_element(By.ID, 'site-search')
 				search_bar.send_keys(brand_and_color)
 				search_bar.send_keys(Keys.ENTER)
 				time.sleep(1)
-				stockx_results = driver.find_elements_by_class_name('tile.browse-tile.updated')
+				stockx_results = driver.find_elements(By.CLASS_NAME, 'tile.browse-tile.updated')
 		
 		if len(stockx_results) > 0: 
 			# click the most relevent item
@@ -167,12 +178,12 @@ def main():
 				exists = False
 				while not exists: 
 					exists = check_element_exists_class_name(driver, "select-control")
-				size_button = driver.find_elements_by_class_name("select-control")[1]
+				size_button = driver.find_elements(By.CLASS_NAME, "select-control")[1]
 				size_button.click()
 				exists = False
 				while not exists: 
 					exists = check_element_exists_class_name(driver, "select-control")
-				size_buttons = driver.find_elements_by_class_name("chakra-menu__menuitem")
+				size_buttons = driver.find_elements(By.CLASS_NAME, "chakra-menu__menuitem")
 				index = int(len(size_buttons) / 2)
 				searching_size = True
 				while searching_size: 
@@ -203,7 +214,7 @@ def main():
 			exists = False
 			while not exists: 
 				exists = check_element_exists_class_name(driver, "gauge-value")
-			avg_price = driver.find_elements_by_class_name('gauge-value')[-1].text.lstrip('$')
+			avg_price = driver.find_elements(By.CLASS_NAME, 'gauge-value')[-1].text.lstrip('$')
 			if ("," in avg_price): 
 				avg_price = avg_price.replace(",", "")
 			# calculates the estimated total profit
@@ -214,7 +225,7 @@ def main():
 			item.adjust_profit(profit)
 			if (profit > min_profit): 
 				profitable_items.append(item)
-		search_bar = driver.find_element_by_id('site-search')
+		search_bar = driver.find_element(By.ID, 'site-search')
 		search_bar.clear()
 
 	# sort the profitable items in descending order
@@ -244,7 +255,7 @@ def is_number(s):
 # check if element exists using xpath
 def check_element_exists_xpath(driver, xpath): 
 	try: 
-		driver.find_element_by_xpath(xpath)
+		driver.find_element(By.XPATH, xpath)
 	except NoSuchElementException:
 		return False
 	return True
@@ -252,7 +263,7 @@ def check_element_exists_xpath(driver, xpath):
 # check if element exists using class name
 def check_element_exists_class_name(driver, class_name): 
 	try: 
-		driver.find_element_by_class_name(class_name)
+		driver.find_element(By.CLASS_NAME, class_name)
 	except NoSuchElementException:
 		return False
 	return True
@@ -288,8 +299,10 @@ def parse_size(size_text):
 	size_text = size_text.lstrip('Size: ')
 	if "ONE SIZE" in size_text: 
 		return ""
-	if "US" in size_text: 
-		size_text = size_text.lstrip('US ')
+	if "Men's US" in size_text: 
+		size_text = size_text.removeprefix("Men's US ")
+	elif "Women's US" in size_text:
+		size_text = size_text.removeprefix("Women's US ")
 	result = ""
 	index = 0
 	while index < len(size_text) and size_text[index] != ' ': 
