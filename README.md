@@ -25,7 +25,7 @@ allow chromedriver to run as a trusted executable.
 
 2. run the script: 
 
-python EZFlipper.py > items.txt
+    python EZFlipper.py > items.txt
 
 3. Open items.txt to find all of the profitable items with their corresponding 
 links ordered by descending profit.
