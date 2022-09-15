@@ -10,7 +10,7 @@ threshold by adjusting the variable 'min_profit' to determine which items are
 worth reselling. With millions of listings on Grailed, there's an abundance of 
 hidden profitable items ready to be found and flipped. 
 
-**DUE TO STOCKX BOT PROTECTION, YOU MAY BE ABLE TO ONLY RUN THIS ONCE A DAY**
+**DUE TO STOCKX BOT PROTECTION, THIS SCRIPT CAN ONLY BE RAN ONCE A DAY.**
 
 ## Requirements
 You must have the latest verion of Google Chrome and 
